@@ -133,7 +133,7 @@ void Gravidade(int* cabecalho, int** matriz, int azuleijoadjacente)
 }
 
 //Ver a matriz toda, começamos a ver em l=0 e c=0, se nao encontrarmos uma mancha passamos a frente se encontrarmos tiramos, fazemos a gravidade e chamamos outra vez do inicio
-int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int** play)
+int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int** play, int *pontos)
 {
 	int coordenadaLC = matriz[l][c];
 	azuleijoadjacente = Mancha(cabecalho, matriz, l, c, azuleijoadjacente);
@@ -145,12 +145,12 @@ int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjac
 		play[numjogadas][1] = c + 1;
 
 
-		//tamanho maximo l x c/2
+		*pontos += Pontuacao(azuleijoadjacente);
 
 
 		numjogadas++;
 		Gravidade(cabecalho, matriz, azuleijoadjacente);
-		numjogadas = RemoverManchas(cabecalho, matriz, 0, 0, 0, numjogadas, play);
+		numjogadas = RemoverManchas(cabecalho, matriz, 0, 0, 0, numjogadas, play, pontos);
 	}
 
 	//Se nao houver
@@ -158,27 +158,26 @@ int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjac
 	else if (azuleijoadjacente == 1 && c + 1 < cabecalho[1])
 	{
 		matriz[l][c] = coordenadaLC;
-		numjogadas = RemoverManchas(cabecalho, matriz, l, c + 1, 0, numjogadas, play);
+		numjogadas = RemoverManchas(cabecalho, matriz, l, c + 1, 0, numjogadas, play, pontos);
 	}
 
 
-	//vai para a linha de cima				//L							//C
+	//vai para a linha de cima						//L						//C
 	else if (azuleijoadjacente == 1 && l + 1 < cabecalho[0] && c + 1 == cabecalho[1])
 	{
 		matriz[l][c] = coordenadaLC;
-		numjogadas = RemoverManchas(cabecalho, matriz, l + 1, 0, 0, numjogadas, play);
+		numjogadas = RemoverManchas(cabecalho, matriz, l + 1, 0, 0, numjogadas, play, pontos);
 	}
 	
 	return numjogadas;
 }
 
-void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int pontos, int** play)
+void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int *pontos, int** play)
 {
-	int numjogadas = RemoverManchas(cabecalho, matriz, l, c, azuleijoadjacente, 0, play);
-	pontos = Pontuacao(azuleijoadjacente);
+	int numjogadas = RemoverManchas(cabecalho, matriz, l, c, azuleijoadjacente, 0, play, pontos);
 
 	fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);
-	fprintf(fp_out, "%d %d\n", numjogadas, pontos);
+	fprintf(fp_out, "%d %d\n", numjogadas, *pontos);
 
 	for(int i=0; i < numjogadas; i++)
 	{
