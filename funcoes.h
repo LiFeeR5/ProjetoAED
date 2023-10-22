@@ -35,5 +35,5 @@ void Gravidade(int* cabecalho, int** matriz, int azuleijoadjacente);
 
 int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int** play);
 
-void Variante1(FILE *fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int pontos, int** play);
+void Variante1(FILE *fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int pontos, int** play);
 #endif

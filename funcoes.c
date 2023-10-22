@@ -172,9 +172,9 @@ int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjac
 	return numjogadas;
 }
 
-void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int pontos, int** play)
+void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int pontos, int** play)
 {
-	numjogadas = RemoverManchas(cabecalho, matriz, l, c, azuleijoadjacente, numjogadas, play);
+	int numjogadas = RemoverManchas(cabecalho, matriz, l, c, azuleijoadjacente, 0, play);
 	pontos = Pontuacao(azuleijoadjacente);
 
 	fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);

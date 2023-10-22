@@ -21,7 +21,6 @@ int main(int argc, char* argv[])
 
 	int** play;
 	
-	int numjogadas = 0;
 
 
 
@@ -91,7 +90,7 @@ int main(int argc, char* argv[])
 				}
 
 				//coordenada incial l=0 c=0
-				Variante1(fp_out, cabecalho, matriz, 0, 0, azuleijoadjacente, numjogadas, pontos, play);
+				Variante1(fp_out, cabecalho, matriz, 0, 0, azuleijoadjacente, pontos, play);
 
 				for (i = 0; i < (((cabecalho[0] * cabecalho[1])-1) / 2); i++)
 				{
