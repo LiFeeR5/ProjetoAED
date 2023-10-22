@@ -6,7 +6,7 @@
 #include "funcoes.h"
 
 
-//teste alteração GIT
+//teste alteração GIT 2
 int main(int argc, char* argv[])
 {
 	FILE* fp;
