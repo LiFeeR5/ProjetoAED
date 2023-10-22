@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 //Linha 88, podemos por l e c em vez de cabecalho[3] - 1 e cabecalho[4] - 1
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -148,7 +150,7 @@ int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjac
 
 		numjogadas++;
 		Gravidade(cabecalho, matriz, azuleijoadjacente);
-		RemoverManchas(cabecalho, matriz, 0, 0, 0, numjogadas, play);
+		numjogadas = RemoverManchas(cabecalho, matriz, 0, 0, 0, numjogadas, play);
 	}
 
 	//Se nao houver
@@ -156,7 +158,7 @@ int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjac
 	else if (azuleijoadjacente == 1 && c + 1 < cabecalho[1])
 	{
 		matriz[l][c] = coordenadaLC;
-		RemoverManchas(cabecalho, matriz, l, c + 1, 0, numjogadas, play);
+		numjogadas = RemoverManchas(cabecalho, matriz, l, c + 1, 0, numjogadas, play);
 	}
 
 
@@ -164,7 +166,7 @@ int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjac
 	else if (azuleijoadjacente == 1 && l + 1 < cabecalho[0] && c + 1 == cabecalho[1])
 	{
 		matriz[l][c] = coordenadaLC;
-		RemoverManchas(cabecalho, matriz, l + 1, 0, 0, numjogadas, play);
+		numjogadas = RemoverManchas(cabecalho, matriz, l + 1, 0, 0, numjogadas, play);
 	}
 	
 	return numjogadas;
