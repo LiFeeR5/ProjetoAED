@@ -17,7 +17,6 @@ int main(int argc, char* argv[])
 	int* cabecalho;
 	int** matriz;
 	int azuleijoadjacente = 0;
-	int coordenadaLC = 0;
 	int pontos = 0;
 
 	int** play;
@@ -83,18 +82,18 @@ int main(int argc, char* argv[])
 		{
 			if(cabecalho[2] == -1)
 			{
-														//+1 se calhar
-				play = (int**)malloc(((cabecalho[0] * cabecalho[1])/2) * sizeof(int*));
+														
+				play = (int**)malloc((((cabecalho[0] * cabecalho[1])-1) / 2) * sizeof(int*));
 
-				for (int i = 0; i < ((cabecalho[0] * cabecalho[1])/2); i++)
+				for (int i = 0; i < (((cabecalho[0] * cabecalho[1])-1) / 2); i++)
 				{
 					play[i] = (int*)malloc(2 * sizeof(int));
 				}
 
 				//coordenada incial l=0 c=0
-				Variante1(fp_out, cabecalho, matriz, 0, 0, azuleijoadjacente, numjogadas, coordenadaLC, pontos, play);
+				Variante1(fp_out, cabecalho, matriz, 0, 0, azuleijoadjacente, numjogadas, pontos, play);
 
-				for (i = 0; i < ((cabecalho[0] * cabecalho[1])/2); i++)
+				for (i = 0; i < (((cabecalho[0] * cabecalho[1])-1) / 2); i++)
 				{
 					free(play[i]);
 				}
@@ -103,7 +102,6 @@ int main(int argc, char* argv[])
 
 			}
 
-			//dar FREE das jogadas *jogadas
 
 
 

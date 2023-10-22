@@ -33,7 +33,7 @@ int Pontuacao(int azuleijoadjacente);
 //Caso haja alguma coluna apenas com "-1" todas as colunas à sua esquerda dao slide para a direita 
 void Gravidade(int* cabecalho, int** matriz, int azuleijoadjacente);
 
-int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int coordenadaLC, int** play);
+int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int** play);
 
-void Variante1(FILE *fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int coordenadaLC, int pontos, int** play);
+void Variante1(FILE *fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int pontos, int** play);
 #endif
