@@ -5,8 +5,6 @@
 
 #include "funcoes.h"
 
-//comentário GIT
-
 int main(int argc, char* argv[])
 {
 	FILE* fp;
