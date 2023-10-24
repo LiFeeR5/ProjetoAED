@@ -225,29 +225,58 @@ int ThereIsHope(Comboio* boardAtual, int* cabecalho, int* totalScore)
     return pontosPossiveis;
 }
 
+void StillMancha(Comboio* boardAtual, int* cabecalho)///////////////////CONFIRMAR
+{
+    int l = boardAtual->coordenadas[0];
+    int c = boardAtual->coordenadas[1];
+
+    if (c + 1 <= (cabecalho[1] - 1))// ou (c <= (cabecalho[1] - 1)
+    {
+        if(boardAtual->matriz[l][c] != boardAtual->matriz[l][c+1])
+        {
+            {
+                boardAtual->coordenadas[1]++;
+                exit;
+            }
+        }
+
+        else
+        {
+            boardAtual->coordenadas[1]++;
+            StillMancha(boardAtual, cabecalho);
+        }
+    }
+
+    if (l + 1 <= (cabecalho[0] - 1))//(l <= (cabecalho[0] - 1))
+    {
+            if(boardAtual->matriz[l][c] != boardAtual->matriz[l+1][0])
+            {//vai para a linha de cima
+                {
+                    boardAtual->coordenadas[0]++;
+                    boardAtual->coordenadas[1] = 0;
+                    exit;
+                }
+            }
+
+            else
+            {
+                boardAtual->coordenadas[0]++;
+                boardAtual->coordenadas[1] = 0;
+                StillMancha(boardAtual, cabecalho);
+            }
+    }
+}
 
 Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
 {
     int thereAreStains = 0;
     Comboio* boardAtual = NULL;
     int cheack = 0;
+    int numplays = 0;
 
     boardAtual = FirstBoard(cabecalho, matriz); //temos de por a matriz inicial aqui sem tirar nenhuma mancha
     push(stack, (Item) boardAtual);
 
-//////////////////////////////////////////////////////////////////////////////////// VER ISTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-
-	//vai para frente
-    if (boardAtual->coordenadas[1] + 1 < cabecalho[1])
-        boardAtual->coordenadas[1]++;
-
-
-	//vai para a linha de cima			    //L						//C
-	else if (boardAtual->coordenadas[0] + 1 < cabecalho[0] && boardAtual->coordenadas[1] + 1 == cabecalho[1])
-    {
-        boardAtual->coordenadas[0]++;
-        boardAtual->coordenadas[1] = 0;
-    }
 
     while(1)
     {
@@ -258,7 +287,21 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
             break;
 
         boardAtual = (Comboio*)pop(stack);
-        
+        //////////////////////////////////////////////////////////////////////////////////// VER ISTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+        if(numplays > 0)
+        {
+            //vai para frente
+            if (boardAtual->coordenadas[1] + 1 < cabecalho[1])
+                boardAtual->coordenadas[1]++;
+
+
+            //vai para a linha de cima			    //L						//C
+            else if (boardAtual->coordenadas[0] + 1 < cabecalho[0] && boardAtual->coordenadas[1] + 1 == cabecalho[1])
+            {
+                boardAtual->coordenadas[0]++;
+                boardAtual->coordenadas[1] = 0;
+            }
+        }
 
         while(1)
         {
@@ -276,6 +319,7 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
 
             if(thereAreStains == 0)
             {
+                numplays--;
                 *totalScore -= boardAtual->score;//Confirmar isto
                 deleteBoard(boardAtual, cabecalho[0]);
                 break;
@@ -283,6 +327,7 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
 
             else if(ThereIsHope(boardAtual, cabecalho, totalScore) < cabecalho[2])
             { 
+                numplays--;
                 *totalScore -= boardAtual->score;//Confirmar isto           
                 deleteBoard(boardAtual, cabecalho[0]);
                 break;
@@ -290,6 +335,7 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
         
             else 
             {
+                numplays++;
                 push(stack,(Item)boardAtual);
                 boardAtual = currentBoard(boardAtual, cabecalho, totalScore);
             }
