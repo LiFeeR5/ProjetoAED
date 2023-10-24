@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
 	int** play;
 	
 	Comboio* solucao = NULL;
-	Stack* stack = NULL;
 
 
 	//Caso haja menos que dois argumentos, sai do programa
@@ -108,11 +107,13 @@ int main(int argc, char* argv[])
 				//variante3
 			}
 
-			else
+			else if(cabecalho[2] >= 0)
 			{
-				Variante2(solucao, fp_out, stack, cabecalho, matriz);
+				Variante2(solucao, fp_out, cabecalho, matriz);
 			}
 
+			else
+				fprintf(fp_out,"%d %d %d", cabecalho[0], cabecalho[1], cabecalho[2]);
 
 
 
