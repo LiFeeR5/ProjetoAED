@@ -13,7 +13,7 @@ char* FileOutName(char* argv[])
 	char* fileoutname = argv[1]; //Recebe o nome do ficheiro de entrada
 	char token = '.';
 	char* posicaotoken = strrchr(fileoutname, token); //Retorna um ponteiro para a posiçao do ultimo '.' (token)
-	strcpy(posicaotoken, ".singlestep"); //Acrescenta a extensao desejada na posiçao do ultimo '.' (token)
+	strcpy(posicaotoken, ".tileblasts"); //Acrescenta a extensao desejada na posiçao do ultimo '.' (token)
 
 	return fileoutname;
 }
