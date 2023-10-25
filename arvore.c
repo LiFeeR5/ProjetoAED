@@ -230,13 +230,13 @@ void StillMancha(Comboio* boardAtual, int* cabecalho)///////////////////CONFIRMA
     int l = boardAtual->coordenadas[0];
     int c = boardAtual->coordenadas[1];
 
-    if (c + 1 <= (cabecalho[1] - 1))// ou (c <= (cabecalho[1] - 1)
+    if (c + 1 < cabecalho[1])
     {
         if(boardAtual->matriz[l][c] != boardAtual->matriz[l][c+1])
         {
             {
                 boardAtual->coordenadas[1]++;
-                exit;
+                return;
             }
         }
 
@@ -247,14 +247,14 @@ void StillMancha(Comboio* boardAtual, int* cabecalho)///////////////////CONFIRMA
         }
     }
 
-    if (l + 1 <= (cabecalho[0] - 1))//(l <= (cabecalho[0] - 1))
+    else if (l + 1 < cabecalho[0] && c + 1 == cabecalho[1])
     {
             if(boardAtual->matriz[l][c] != boardAtual->matriz[l+1][0])
             {//vai para a linha de cima
                 {
                     boardAtual->coordenadas[0]++;
                     boardAtual->coordenadas[1] = 0;
-                    exit;
+                    return;
                 }
             }
 
@@ -287,8 +287,11 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
             break;
 
         boardAtual = (Comboio*)pop(stack);
+
+        if(numplays == 1)
+        StillMancha(boardAtual, cabecalho);
         //////////////////////////////////////////////////////////////////////////////////// VER ISTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-        if(numplays > 0)
+        /*if(numplays == 1)
         {
             //vai para frente
             if (boardAtual->coordenadas[1] + 1 < cabecalho[1])
@@ -301,10 +304,10 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
                 boardAtual->coordenadas[0]++;
                 boardAtual->coordenadas[1] = 0;
             }
-        }
-
+        }*/
         while(1)
         {
+            numplays = 1;
             thereAreStains = VerificarMatriz(boardAtual, cabecalho, boardAtual->coordenadas[0], boardAtual->coordenadas[1]);
 
             if(*totalScore >= cabecalho[2] && thereAreStains == 0)//nao ha mais manchas na matriz
@@ -314,28 +317,20 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
                 return boardAtual;
                 break;
             }
-        
-
-
             if(thereAreStains == 0)
             {
-                numplays--;
                 *totalScore -= boardAtual->score;//Confirmar isto
                 deleteBoard(boardAtual, cabecalho[0]);
                 break;
             }
-
             else if(ThereIsHope(boardAtual, cabecalho, totalScore) < cabecalho[2])
             { 
-                numplays--;
                 *totalScore -= boardAtual->score;//Confirmar isto           
                 deleteBoard(boardAtual, cabecalho[0]);
                 break;
             }
-        
             else 
             {
-                numplays++;
                 push(stack,(Item)boardAtual);
                 boardAtual = currentBoard(boardAtual, cabecalho, totalScore);
             }
