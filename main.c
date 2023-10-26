@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 
 	//O nome do ficheiro de saída
-	fileoutname = FileOutName(argv);
+	fileoutname = FileOutName(argv[1]);
 
 	//Abrir o ficheiro de saída em modo de escrita
 	fp_out = (FILE*)fopen(fileoutname, "w");
@@ -115,4 +115,6 @@ int main(int argc, char* argv[])
 	//Fechar os Ficheiros
 	fclose(fp);
 	fclose(fp_out);
+
+	return 0;
 }

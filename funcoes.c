@@ -8,14 +8,35 @@
 
 
 //Recebe o nome do ficheiro de entrada e devolve o nome do ficheiro de saida
-char* FileOutName(char* argv[])
-{
-	char* fileoutname = argv[1]; //Recebe o nome do ficheiro de entrada
-	char token = '.';
-	char* posicaotoken = strrchr(fileoutname, token); //Retorna um ponteiro para a posiçao do ultimo '.' (token)
-	strcpy(posicaotoken, ".tileblasts"); //Acrescenta a extensao desejada na posiçao do ultimo '.' (token)
+char* FileOutName(const char* inputFileName) {
+	const char* token = ".";
+	const char* positionOfToken = strrchr(inputFileName, '.');
 
-	return fileoutname;
+	if (positionOfToken == NULL) {
+		// O ponto não foi encontrado no nome do arquivo de entrada.
+		return NULL; // Ou realize outra ação apropriada.
+	}
+
+	// Tamanho da parte do nome do arquivo antes do ponto.
+	size_t prefixLength = positionOfToken - inputFileName;
+
+	// Tamanho total da nova string (incluindo ".tileblasts" e o caractere nulo).
+	size_t newLength = prefixLength + strlen(".tileblasts") + 1;
+
+	char* fileOutName = (char*)malloc(newLength);
+
+	if (fileOutName == NULL) {
+		fprintf(stderr, "Falha na alocação de memória.\n");
+		exit(1); // Ou tome outra ação apropriada em caso de falha na alocação.
+	}
+
+	// Copia a parte do nome do arquivo antes do ponto.
+	strncpy(fileOutName, inputFileName, prefixLength);
+
+	// Acrescenta a extensão desejada na nova string.
+	strcpy(fileOutName + prefixLength, ".tileblasts");
+
+	return fileOutName;
 }
 
 //Retira os azuleijos da coordenada dada no cabecalho e adjacentes à coordanada, contando-os e construindo a mancha 
@@ -79,15 +100,15 @@ void Gravidade(int* cabecalho, int** matriz, int azuleijoadjacente)
 		int* tamanhoqueda = (int*)malloc(cabecalho[1] * sizeof(int));
 
 		//Inicializaçao do vetor tamanhoqueda
-		for (int i = 0; i <= (cabecalho[1] - 1); i++)
+		for (int i = 0; i < (cabecalho[1]); i++)
 		{
 			tamanhoqueda[i] = 0;
 		}
 
 		//Percorre as linhas de baixo para cima, ao longo das colunas 
-		for (int col = 0; col <= (cabecalho[1] - 1); col++)
+		for (int col = 0; col < (cabecalho[1]); col++)
 		{
-			for (int li = 0; li <= (cabecalho[0] - 1); li++)
+			for (int li = 0; li < (cabecalho[0]); li++)
 			{
 				if (matriz[li][col] == -1) tamanhoqueda[col]++;
 
@@ -114,7 +135,7 @@ void Gravidade(int* cabecalho, int** matriz, int azuleijoadjacente)
 					}
 				}
 
-				for (int j = 0; j <= (Colvazias - 1); j++)
+				for (int j = 0; j < (Colvazias); j++)
 				{
 					for (int k = 0; k <= (cabecalho[0] - 1); k++)
 					{

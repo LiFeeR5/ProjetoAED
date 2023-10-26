@@ -52,9 +52,11 @@ void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azu
 {
 	int** play;
 
-	play = (int**)malloc((((cabecalho[0] * cabecalho[1])) / 2) * sizeof(int*));
+    int tamanho = ((cabecalho[0] * cabecalho[1])) / 2;
 
-	for (int i = 0; i < (((cabecalho[0] * cabecalho[1])) / 2); i++)
+	play = (int**)malloc(tamanho * sizeof(int*));
+
+	for (int i = 0; i < tamanho; i++)
 	{
 		play[i] = (int*)malloc(2 * sizeof(int));
 	}
@@ -78,7 +80,7 @@ void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azu
 		fprintf(fp_out,"0 0");
 	}	
 	
-	for (int i = 0; i < (((cabecalho[0] * cabecalho[1])) / 2); i++)
+	for (int i = 0; i < tamanho; i++)
 	{
 		free(play[i]);
 	}
