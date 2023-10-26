@@ -9,6 +9,8 @@
 
 typedef struct stack_ Stack;
 
+typedef struct stackBestRamo_ StackBestRamo;
+
 Stack*  createStack (unsigned capacity);
 int     isFull (Stack*);
 int     isEmpty (Stack*);

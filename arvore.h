@@ -7,34 +7,40 @@
 
 #include "stack.h"
 
+struct _Comboio
+{
+    int **matriz;
+    int score;
+    int **manchacoord;
+    int totalmanchas;
+    int cnt;
+};
+
 typedef struct _Comboio Comboio;
 
 Comboio* initComboio(int* cabecalho);
 
-Comboio* FirstBoard(int* cabecalho, int** matriz);
-
 Comboio* copyComboio(Comboio* original, int* cabecalho);
 
 //getNewBoardMove  
-void novaMatriz(Comboio* boardAtual, int *cabecalho, int* totalScore);
+void novaMatriz(Comboio* boardAtual, Comboio* newBoard, int *cabecalho, int* totalScore);
+
+void FindAllManchas(Comboio* board, int* cabecalho, int** matrizTemporaria);
 
 //makeBoardMove  //Tira a mancha e cria a nova board
-Comboio* currentBoard(Comboio* board, int* cabecalho, int* totalScore);
+Comboio* currentBoard (Comboio* board, int* cabecalho, int* totalScore, int** matrizTemporaria);
 
-void deleteBoard(Comboio *board, int L);
+Comboio* FirstBoard(int* cabecalho, int** matriz, int** matrizTemporaria);
 
-int ProcuraMancha(Comboio* boardAtual, int* cabecalho, int l, int c);
+void deleteBoard(Comboio *board, int* cabecalho);
 
-//Ver a matriz toda, começamos a ver em l=0 e c=0, se nao encontrarmos uma mancha passamos a frente, até chegar ao fim returnando 0, se encontrarmos returnamos 1
-int VerificarMatriz(Comboio* board, int* cabecalho, int l, int c);
+int compararDecrescente(const void *a, const void *b);
 
-int CountNum(Comboio* boardAtual, int* cabecalho);
+int ThereIsHope(Comboio* boardAtual, int* cabecalho, int* totalScore, int* array_qsort);
 
-int ThereIsHope(Comboio* boardAtual, int* cabecalho, int* totalScore);
+void NextMancha(Comboio* boardAtual);
 
+Comboio* DFS2(Stack *stack, int* cabecalho, int** matriz, int* totalScore, int** matrizTemporaria, int* qsort_array);
 
-Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore);
-
-void Variante2(Comboio* solucao, FILE* fp_out, int* cabecalho, int** matriz);
-
+void DFS3(Stack *stack, int* cabecalho, int** matriz, int** matrizTemporaria, int** saveBestRamo, int* qsort_array, int* PontosAtuais);
 #endif

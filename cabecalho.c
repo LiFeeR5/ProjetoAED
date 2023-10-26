@@ -6,8 +6,8 @@
 
 #include "funcoes.h"
 
-//Le a primeira linha de cada exercicio guardando os 5 valores no vetor cabecalho
-//[C]olunas, [L]inhas, [v]ariavel, [l]inha, [c]oluna
+//Le a primeira linha de cada exercicio guardando os 3 valores no vetor cabecalho
+//[C]olunas, [L]inhas, [v]ariante
 int LerCabecalho(FILE* fp, int* cabecalho)
 {
 	return fscanf(fp, "%d %d %d", &cabecalho[0], &cabecalho[1], &cabecalho[2]);

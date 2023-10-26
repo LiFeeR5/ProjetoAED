@@ -23,18 +23,6 @@ int **ConstuirMatriz(FILE* fp, int** matriz, int* cabecalho)
 	return matriz;
 }
 
-//Verifica se a coordenada dada no cabecalho se encontra na matriz e retorna 1
-//Caso contrário da print do cabecalho e retorna -1
-int VerificacaoCoordenadas(int* cabecalho, int** matriz, FILE* fp_out)
-{
-	if ((1 > cabecalho[3] || cabecalho[3] > cabecalho[0]) || (1 > cabecalho[4] || cabecalho[4] > cabecalho[1]))
-	{
-		fprintf(fp_out, "%d %d %d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2], cabecalho[3], cabecalho[4]);
-		return -1;
-	}
-	else return 1;
-}
-
 //Calcula a pontuaçao dos azuleijos retirados e retorna os pontos 
 int Pontuacao(int azuleijoadjacente)
 {

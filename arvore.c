@@ -6,14 +6,7 @@
 #include "funcoes.h"
 #include "stack.h"
 
-struct _Comboio
-{
-    int **matriz;
-    int coordenadas[2];
-    int score;
-};
-
-
+//Inicia todas variavéis da estrutura Comboio
 Comboio* initComboio(int* cabecalho)
 {
     Comboio *head = NULL;
@@ -30,31 +23,21 @@ Comboio* initComboio(int* cabecalho)
     }
  
     /* there is no last play yet */
-    head->coordenadas[0] = 0;
-    head->coordenadas[1] = 0;
     head->score = 0;
+    head->totalmanchas = 0;
+    head->cnt = 0;
+
+    head->manchacoord = (int**) malloc(((cabecalho[0]*cabecalho[1])/2) * sizeof(int*));
+
+    for (int i = 0; i < ((cabecalho[0]*cabecalho[1])/2); i++)
+    {
+        head->manchacoord[i] = (int*) malloc(2*sizeof(int));
+    }
 
     return head;
 }
 
-Comboio* FirstBoard(int* cabecalho, int** matriz)
-{
-    Comboio* boardAtual = NULL;
-
-    boardAtual = initComboio(cabecalho);
-
-    for(int i = 0; i < cabecalho[0]; i++)
-    {
-        for(int j = 0; j < cabecalho[1]; j++)
-        {
-            boardAtual->matriz[i][j] = matriz[i][j];
-        }
-    }
-
-
-    return boardAtual;
-}
-
+//Cria uma nova matriz e chama o initComboio para inicializar tds as variaveis, copiando a matriz original para a nova matriz
 Comboio* copyComboio(Comboio* original, int* cabecalho){
     int i, j;
     Comboio* copy = NULL;
@@ -69,218 +52,193 @@ Comboio* copyComboio(Comboio* original, int* cabecalho){
         }
     }
 
-    //Vamos começar a procurar manchas na mesma coordenada, pois nos casos em que uma nova mancha é formada com a queda de 
-    //azuleijos, a coordenada atual tambem vai pertencer a esta mancha
-    copy->coordenadas[0] = original->coordenadas[0];
-    copy->coordenadas[1] = original->coordenadas[1];
-    copy->score = 0;//podemos tirar isto, esta feito no initComboio
-
     return copy;
 }
 
-
-//getNewBoardMove  
-void novaMatriz(Comboio* boardAtual, int *cabecalho, int* totalScore)
+//Retira a mancha que as coordenadas da matriz anterior indicam 
+void novaMatriz(Comboio* boardAtual, Comboio* newBoard, int *cabecalho, int* totalScore)
 {
 	int azuleijoadjacente = 0;
 
-	azuleijoadjacente = Mancha(cabecalho, boardAtual->matriz, boardAtual->coordenadas[0], boardAtual->coordenadas[1], azuleijoadjacente);
+	azuleijoadjacente = Mancha(cabecalho, newBoard->matriz, boardAtual->manchacoord[boardAtual->cnt][0], boardAtual->manchacoord[boardAtual->cnt][1], azuleijoadjacente);
 		
-    //if (azuleijoadjacente > 1)
-	{
-		*totalScore += Pontuacao(azuleijoadjacente);
-        boardAtual->score = Pontuacao(azuleijoadjacente);
-		Gravidade(cabecalho, boardAtual->matriz, azuleijoadjacente);
-
-        boardAtual->coordenadas[0] = 0;
-        boardAtual->coordenadas[1] = 0;
-	}
+	*totalScore += Pontuacao(azuleijoadjacente);
+    newBoard->score = Pontuacao(azuleijoadjacente);
+	Gravidade(cabecalho, newBoard->matriz, azuleijoadjacente);
 }
 
-
-//makeBoardMove  //Tira a mancha e cria a nova board
-Comboio* currentBoard (Comboio* board, int* cabecalho, int* totalScore)
+//copia a board->matriz para a matrizTemporaria para encontrar as coordenadas de todas as manchas dessa matriz. 
+//Guarda tds as coordenadas das manchas no board->coordmanchas
+void FindAllManchas(Comboio* board, int* cabecalho, int** matrizTemporaria)
 {
-    Comboio* newBoard = NULL;
-
-    newBoard = copyComboio(board, cabecalho);
-    novaMatriz(newBoard, cabecalho, totalScore);
-	//chamar a função mancha com as coordenadas que quremos tirar
-
-	return newBoard;
-}
-
-void deleteBoard(Comboio *board, int L)
-{
-    for (int i = 0; i < L; i++)
-    {
-        free(board->matriz[i]);
-    }
-    free(board->matriz);
-
-    free(board);
-}
-
-int ProcuraMancha(Comboio* boardAtual, int* cabecalho, int l, int c)
-{
-	int existeMancha = 0;
-
-	//Verificar se está dentro da matriz 
-	if (l + 1 <= (cabecalho[0] - 1))
-	{
-		//verifica se em cima da coordenada o valor é igual ao valor da coordenada recebida
-		if (boardAtual->matriz[l + 1][c] != -1 && boardAtual->matriz[l][c] == boardAtual->matriz[l + 1][c])
-		{
-			existeMancha = 1;
-            return existeMancha;
-		}
-	}
-
-	//Verificar se está dentro da matriz 
-	if (c + 1 <= (cabecalho[1] - 1))
-	{
-		//verifica se à direita da coordenada o valor é igual ao valor da coordenada recebida
-		if (boardAtual->matriz[l][c + 1] != -1 && boardAtual->matriz[l][c] == boardAtual->matriz[l][c + 1])
-		{
-			existeMancha = 1;
-            return existeMancha;
-		}
-	}
-
-	//Verificar se está dentro da matriz 
-	if (l - 1 >= 0)
-	{
-		//verifica se em baixo da coordenada o valor é igual ao valor da coordenada recebida
-		if (boardAtual->matriz[l - 1][c] != -1 && boardAtual->matriz[l][c] == boardAtual->matriz[l - 1][c])
-		{
-			existeMancha = 1;
-            return existeMancha;
-		}
-	}
-
-	//Verificar se está dentro da matriz
-	if (c - 1 >= 0)
-	{
-		//verifica se à esquerda da coordenada o valor é igual ao valor da coordenada recebida
-		if (boardAtual->matriz[l][c - 1] != -1 && boardAtual->matriz[l][c] == boardAtual->matriz[l][c - 1])
-		{
-			existeMancha = 1;
-            return existeMancha;
-		}
-	}
-
-    return existeMancha;
-}
-
-//Ver a matriz toda, começamos a ver em l=0 e c=0, se nao encontrarmos uma mancha passamos a frente, até chegar ao fim returnando 0, se encontrarmos returnamos 1
-int VerificarMatriz(Comboio* board, int* cabecalho, int l, int c)
-{
-    //Recebe 1 se existir mancha, ou 0 se nao existir mancha
-	int existeMancha = ProcuraMancha(board, cabecalho, l, c);
-
-	//Se houver returnamos 1
-	if (existeMancha == 1)
-    {
-        board->coordenadas[0] = l;
-        board->coordenadas[1] = c;
-        return existeMancha;
-    }
-	//Se nao houver
-	//vai para frente                       //C
-	else if (existeMancha == 0 && c + 1 < cabecalho[1])
-		existeMancha = VerificarMatriz(board, cabecalho, l, c + 1);
-
-
-	//vai para a linha de cima			    //L						//C
-	else if (existeMancha == 0 && l + 1 < cabecalho[0] && c + 1 == cabecalho[1])
-		existeMancha = VerificarMatriz(board, cabecalho, l + 1, 0);
-
-    return existeMancha;
-}
-
-int CountNum(Comboio* boardAtual, int* cabecalho)
-{
-    int totalNum = 0;
+    int cnt = 0;
 
     for(int i = 0; i < cabecalho[0]; i++)
     {
         for(int j = 0; j < cabecalho[1]; j++)
         {
-            if(boardAtual->matriz[i][j] != -1)
-                totalNum++;
+            matrizTemporaria[i][j] = board->matriz[i][j];
         }
     }
 
-    return totalNum;
+    for(int i = 0; i < cabecalho[0]; i++)
+    {
+        for(int j = 0; j < cabecalho[1]; j++)
+        {
+            int azuleijosadjacentes = 0;
+            int valorLC = matrizTemporaria[i][j];
+            azuleijosadjacentes = Mancha(cabecalho, matrizTemporaria, i, j, azuleijosadjacentes);
+
+            if(azuleijosadjacentes == 1)
+                matrizTemporaria[i][j] = valorLC;
+
+            if (azuleijosadjacentes != 1)
+            {
+                board->manchacoord[cnt][0] = i;
+                board->manchacoord[cnt][1] = j;
+                cnt++;
+            }
+        }
+    }
+
+    board->totalmanchas = cnt;     
 }
 
-int ThereIsHope(Comboio* boardAtual, int* cabecalho, int* totalScore)
+
+//Cria a nova board, tira a mancha e encontra todas as coordenadas de todas as manchas da nova matriz
+Comboio* currentBoard (Comboio* board, int* cabecalho, int* totalScore, int** matrizTemporaria)
+{
+    Comboio* newBoard = NULL;
+
+    //Copia a matriz para board->matriz e inicializa o board->coordenadas e score
+    newBoard = copyComboio(board, cabecalho);
+
+    //retira a mancha, faz a gravidade e soma os pontos ao pontos total
+    novaMatriz(board, newBoard, cabecalho, totalScore);
+
+	//copia a board->matriz para a matrizTemporaria e guarda tds as coordenadas das manchas no board->coordmanchas
+    FindAllManchas(newBoard, cabecalho, matrizTemporaria);
+
+	return newBoard;
+}
+
+//Inicializas a board toda, copia a matriz para a matrizTemporaria para encontrar as coordenadas de tds as manchas da matriz
+//Guarda as coordenadas das manchas tds no boardAtual->manchacoor
+Comboio* FirstBoard(int* cabecalho, int** matriz, int** matrizTemporaria)
+{
+    Comboio* boardAtual = NULL;
+
+    boardAtual = initComboio(cabecalho);
+
+    for(int i = 0; i < cabecalho[0]; i++)
+    {
+        for(int j = 0; j < cabecalho[1]; j++)
+        {
+            boardAtual->matriz[i][j] = matriz[i][j];
+        }
+    }
+
+    //copia a board->matriz para a matrizTemporaria e guarda tds as coordenadas das manchas no board->coordmanchas
+    FindAllManchas(boardAtual, cabecalho, matrizTemporaria);
+
+
+    return boardAtual;
+}
+
+//Da free da estrutura da matriz atual
+void deleteBoard(Comboio *board, int* cabecalho)
+{
+    for (int i = 0; i < cabecalho[0]; i++)
+    {
+        free(board->matriz[i]);
+    }
+    free(board->matriz);
+
+    for (int i = 0; i < ((cabecalho[0]*cabecalho[1])/2); i++)
+    {
+        free(board->manchacoord[i]);
+    }
+    free(board->manchacoord);
+
+    free(board);
+}
+
+//Comparação do qsort
+int compararDecrescente(const void *a, const void *b) {
+    // Convertemos os ponteiros void * de volta para o tipo apropriado (int *)
+    int *intA = (int *)a;
+    int *intB = (int *)b;
+
+    // A lógica da comparação para ordem decrescente
+    return (*intB - *intA);
+}
+
+//Verifica se este ramo tem uma solução possivel
+int ThereIsHope(Comboio* boardAtual, int* cabecalho, int* totalScore, int* array_qsort)
 {
     int pontosPossiveis = *totalScore;
+    int cnt = 0;
+    int tamanho = cabecalho[0]*cabecalho[1];
+    int comparador = 0;
+    int k = 0;
 
+    for(int i = 0; i < cabecalho[0]; i++)
+    {
+        for(int j = 0; j < cabecalho[1]; j++)
+        {
+            array_qsort[k] = boardAtual->matriz[i][j];
+            k++;
+        }
+    }
 
-    int totalNum = CountNum(boardAtual, cabecalho);
-    pontosPossiveis += Pontuacao(totalNum);
+    // Chama qsort com a função de comparação personalizada
+    qsort(array_qsort, tamanho, sizeof(int), compararDecrescente);
+
+    comparador = array_qsort[0];
+
+    for(int i = 0; i < cabecalho[0]*cabecalho[1]; i++) //32221
+    {
+        if (comparador == array_qsort[i])
+            cnt++;
+
+        else if (comparador != array_qsort[i] && cnt == 1)
+        {
+            cnt = 1;
+            comparador = array_qsort[i];
+        }
+            
+
+        else
+        {
+            comparador = array_qsort[i];
+            pontosPossiveis += Pontuacao(cnt);
+            cnt = 1;
+         }
+    }
 
     return pontosPossiveis;
 }
 
-void StillMancha(Comboio* boardAtual, int* cabecalho)///////////////////CONFIRMAR
+//Quando recuamos no ramo, adicionamos 1 ao cnt para posteriormente verificar as coordenadas da mancha seguinte
+void NextMancha(Comboio* boardAtual)
 {
-    int l = boardAtual->coordenadas[0];
-    int c = boardAtual->coordenadas[1];
+    if (boardAtual->cnt < boardAtual->totalmanchas)
+        boardAtual->cnt++;
 
-    if (c + 1 < cabecalho[1])
-    {
-        if(boardAtual->matriz[l][c] != boardAtual->matriz[l][c+1])
-        {
-            {
-                boardAtual->coordenadas[1]++;
-                return;
-            }
-        }
-
-        else
-        {
-            boardAtual->coordenadas[1]++;
-            StillMancha(boardAtual, cabecalho);
-        }
-    }
-
-    else if (l + 1 < cabecalho[0] && c + 1 == cabecalho[1])
-    {
-            if(boardAtual->matriz[l][c] != boardAtual->matriz[l+1][0])
-            {//vai para a linha de cima
-                {
-                    boardAtual->coordenadas[0]++;
-                    boardAtual->coordenadas[1] = 0;
-                    return;
-                }
-            }
-
-            else
-            {
-                boardAtual->coordenadas[0]++;
-                boardAtual->coordenadas[1] = 0;
-                StillMancha(boardAtual, cabecalho);
-            }
-    }
 }
 
-Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
+Comboio* DFS2(Stack *stack, int* cabecalho, int** matriz, int* totalScore, int** matrizTemporaria, int* qsort_array)
 {
-    int thereAreStains = 0;
     Comboio* boardAtual = NULL;
-    int cheack = 0;
-    int numplays = 0;
+    int check = 0;
 
-    boardAtual = FirstBoard(cabecalho, matriz); //temos de por a matriz inicial aqui sem tirar nenhuma mancha
+    boardAtual = FirstBoard(cabecalho, matriz, matrizTemporaria); //inicializamos tudo e ja sabemos as coordenadas das manchas
     push(stack, (Item) boardAtual);
 
 
     while(1)
     {
-        if(cheack == 1)
+        if(check == 1)
             break;
         
         if(isEmpty(stack))
@@ -288,51 +246,40 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
 
         boardAtual = (Comboio*)pop(stack);
 
-        if(numplays == 1)
-        StillMancha(boardAtual, cabecalho);
-        //////////////////////////////////////////////////////////////////////////////////// VER ISTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-        /*if(numplays == 1)
+        if(check == 2)
         {
-            //vai para frente
-            if (boardAtual->coordenadas[1] + 1 < cabecalho[1])
-                boardAtual->coordenadas[1]++;
+            NextMancha(boardAtual);
+            check = 0;
+        }
 
-
-            //vai para a linha de cima			    //L						//C
-            else if (boardAtual->coordenadas[0] + 1 < cabecalho[0] && boardAtual->coordenadas[1] + 1 == cabecalho[1])
-            {
-                boardAtual->coordenadas[0]++;
-                boardAtual->coordenadas[1] = 0;
-            }
-        }*/
         while(1)
         {
-            numplays = 1;
-            thereAreStains = VerificarMatriz(boardAtual, cabecalho, boardAtual->coordenadas[0], boardAtual->coordenadas[1]);
-
-            if(*totalScore >= cabecalho[2] && thereAreStains == 0)//nao ha mais manchas na matriz
+            if(*totalScore >= cabecalho[2] && boardAtual->totalmanchas == 0)//nao ha mais manchas na matriz
             {
-                cheack = 1;
+                check = 1;
                 push(stack,(Item)boardAtual);
                 return boardAtual;
                 break;
             }
-            if(thereAreStains == 0)
+            if(boardAtual->totalmanchas == 0 || boardAtual->cnt == boardAtual->totalmanchas)
             {
+                check = 2;
                 *totalScore -= boardAtual->score;//Confirmar isto
-                deleteBoard(boardAtual, cabecalho[0]);
+                //numplays = 1;
+                deleteBoard(boardAtual, cabecalho);
                 break;
             }
-            else if(ThereIsHope(boardAtual, cabecalho, totalScore) < cabecalho[2])
+            else if(ThereIsHope(boardAtual, cabecalho, totalScore, qsort_array) < cabecalho[2])
             { 
-                *totalScore -= boardAtual->score;//Confirmar isto           
-                deleteBoard(boardAtual, cabecalho[0]);
+                check = 2;
+                *totalScore -= boardAtual->score;     
+                deleteBoard(boardAtual, cabecalho);
                 break;
             }
             else 
             {
                 push(stack,(Item)boardAtual);
-                boardAtual = currentBoard(boardAtual, cabecalho, totalScore);
+                boardAtual = currentBoard(boardAtual, cabecalho, totalScore, matrizTemporaria);//inicializamos tudo e ja sabemos as coordenadas das manchas
             }
         }
     }
@@ -340,48 +287,83 @@ Comboio* DFS(Stack *stack, int* cabecalho, int** matriz, int* totalScore)
     return NULL;
 }
 
-void Variante2(Comboio* solucao, FILE* fp_out, int* cabecalho, int** matriz)
+void DFS3(Stack *stack, int* cabecalho, int** matriz, int** matrizTemporaria, int** saveBestRamo, int* qsort_array, int* PontosAtuais)
 {
-    Stack* stack = createStack(cabecalho[0]*cabecalho[1]/2);
-    int totalScore = 0;
+    Comboio* boardAtual = NULL;
+    Comboio* aux = NULL;
+    int check = 0;
+    int numplays = 0;
+    int PontosMaximos = 0;
 
-    solucao = DFS(stack, cabecalho, matriz, &totalScore);
+    boardAtual = FirstBoard(cabecalho, matriz, matrizTemporaria); //inicializamos tudo e ja sabemos as coordenadas das manchas
+    push(stack, (Item) boardAtual);
 
 
-    fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);
+    while(1)
+    {   
+        if(isEmpty(stack))
+            break;
 
-    if(solucao == NULL)
-    {
-        fprintf(fp_out, "0 -1\n");
-        deleteBoard(solucao, cabecalho[0]);
-    } 
-    
-    else
-    {
-       
-        
-        int top = getTop(stack); 
-        
-        fprintf(fp_out, "%d %d\n", top, totalScore);
-        
-        for(int i = 0; i < top; i++)
+        boardAtual = (Comboio*)pop(stack);
+
+        if(check == 2)
         {
-            solucao = (Comboio*)peekFisrt(stack, i);
-            fprintf(fp_out, "%d %d\n", solucao->coordenadas[0] +1, solucao->coordenadas[1] +1);
-            deleteBoard(solucao, cabecalho[0]);
+            NextMancha(boardAtual);
+            check = 0;
         }
 
-        /*while(!isEmpty(stack))
+        while(1)
         {
-             deleteBoard((Comboio*)pop(stack),cabecalho[0]);
+            if(boardAtual->totalmanchas == 0 && *PontosAtuais > PontosMaximos)//nao ha mais manchas na matriz
+            {
+                
+                for(int i = 0; i < numplays +1; i++)
+                {
+                    if(i == 0)
+                    {
+                        saveBestRamo[i][0] = numplays;
+                        saveBestRamo[i][1] = *PontosAtuais;
+                    }
+
+                    else
+                    {
+                        aux = (Comboio*)peekFisrt(stack, i-1);
+                        saveBestRamo[i][0] = aux->manchacoord[aux->cnt][0];
+                        saveBestRamo[i][1] = aux->manchacoord[aux->cnt][1];
+                    }
+                }
+
+                PontosMaximos = *PontosAtuais;
+                numplays--;
+                check = 2;
+                *PontosAtuais -= boardAtual->score; //Desnecessário, pois boardAtual->score = 0
+                deleteBoard(boardAtual, cabecalho);
+                break;
+            }
+            if(boardAtual->totalmanchas == 0 || boardAtual->cnt == boardAtual->totalmanchas)
+            {
+                numplays--;
+                check = 2;
+                *PontosAtuais -= boardAtual->score;
+                deleteBoard(boardAtual, cabecalho);
+                break;
+            }
+            else if(ThereIsHope(boardAtual, cabecalho, PontosAtuais, qsort_array) < PontosMaximos)
+            {
+                ThereIsHope(boardAtual, cabecalho, PontosAtuais, qsort_array);
+                numplays--;
+                check = 2;
+                *PontosAtuais -= boardAtual->score;       
+                deleteBoard(boardAtual, cabecalho);
+                break;
+            }
+            else 
+            {
+                numplays++;
+                push(stack,(Item)boardAtual);
+                boardAtual = currentBoard(boardAtual, cabecalho, PontosAtuais, matrizTemporaria);//inicializamos tudo e ja sabemos as coordenadas das manchas
+            }
         }
-
-        deleteStack(stack);*/
-
-        //Free do ultimo elemento da stack
-        solucao = (Comboio*)peekFisrt(stack, top);
-        deleteBoard(solucao, cabecalho[0]); //implicit declaration
-
-        deleteStack(stack);
     }
+    deleteStack(stack);
 }
