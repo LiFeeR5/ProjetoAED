@@ -113,6 +113,7 @@ int main(int argc, char* argv[])
 	}
 
 	//Fechar os Ficheiros
+	free(fileoutname);
 	fclose(fp);
 	fclose(fp_out);
 

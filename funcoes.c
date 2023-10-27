@@ -6,10 +6,10 @@
 
 #include "funcoes.h"
 
-
+////////////////////////////////////////////////////////////////////////////////CHATTTTT TTEMOS DE DESCOMENDAR
 //Recebe o nome do ficheiro de entrada e devolve o nome do ficheiro de saida
-char* FileOutName(const char* inputFileName) {
-	const char* token = ".";
+char* FileOutName(char* inputFileName) {
+	//const char* token = ".";
 	const char* positionOfToken = strrchr(inputFileName, '.');
 
 	if (positionOfToken == NULL) {

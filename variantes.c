@@ -173,12 +173,13 @@ void Variante3(FILE* fp_out, int* cabecalho, int** matriz)
     int** saveBestRamo;
     int* qsort_array;
     int PontosAtuais = 0;
+    int tamanho = ((cabecalho[0]*cabecalho[1])/2) +1;
 
     qsort_array = (int*) malloc(cabecalho[0]*cabecalho[1] * sizeof(int));
 
-    saveBestRamo = (int**) malloc(((cabecalho[0]*cabecalho[1])/2) * sizeof(int*));
+    saveBestRamo = (int**) malloc(tamanho * sizeof(int*));
 
-    for (int i = 0; i < ((cabecalho[0]*cabecalho[1])/2) +1; i++)
+    for (int i = 0; i < tamanho; i++)
     {
         saveBestRamo[i] = (int*) malloc(2*sizeof(int));
     }

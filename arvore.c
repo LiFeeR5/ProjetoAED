@@ -198,7 +198,10 @@ int ThereIsHope(Comboio* boardAtual, int* cabecalho, int* totalScore, int* array
 
     for(int i = 0; i < cabecalho[0]*cabecalho[1]; i++) //32221
     {
-        if (comparador == array_qsort[i])
+        //if (array_qsort[i] == -1)
+            //return pontosPossiveis;
+
+        if (comparador == array_qsort[i] && i+1 < cabecalho[0]*cabecalho[1])
             cnt++;
 
         else if (comparador != array_qsort[i] && cnt == 1)
@@ -207,7 +210,6 @@ int ThereIsHope(Comboio* boardAtual, int* cabecalho, int* totalScore, int* array
             comparador = array_qsort[i];
         }
             
-
         else
         {
             comparador = array_qsort[i];
@@ -231,7 +233,7 @@ Comboio* DFS2(Stack *stack, int* cabecalho, int** matriz, int* totalScore, int**
 {
     Comboio* boardAtual = NULL;
     int check = 0;
-
+    
     boardAtual = FirstBoard(cabecalho, matriz, matrizTemporaria); //inicializamos tudo e ja sabemos as coordenadas das manchas
     push(stack, (Item) boardAtual);
 
@@ -254,6 +256,7 @@ Comboio* DFS2(Stack *stack, int* cabecalho, int** matriz, int* totalScore, int**
 
         while(1)
         {
+            int a =ThereIsHope(boardAtual, cabecalho, totalScore, qsort_array);
             if(*totalScore >= cabecalho[2] && boardAtual->totalmanchas == 0)//nao ha mais manchas na matriz
             {
                 check = 1;
@@ -269,7 +272,7 @@ Comboio* DFS2(Stack *stack, int* cabecalho, int** matriz, int* totalScore, int**
                 deleteBoard(boardAtual, cabecalho);
                 break;
             }
-            else if(ThereIsHope(boardAtual, cabecalho, totalScore, qsort_array) < cabecalho[2])
+            else if(a < cabecalho[2])
             { 
                 check = 2;
                 *totalScore -= boardAtual->score;     

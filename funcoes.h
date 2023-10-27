@@ -6,7 +6,7 @@
 #include <string.h>
 
 //Recebe o nome do ficheiro de entrada e devolve o nome do ficheiro de saida
-char* FileOutName(char* argv[]);
+char* FileOutName(char* inputFileName);
 
 //Le a primeira linha de cada exercicio guardando os 5 valores no vetor cabecalho
 int LerCabecalho(FILE* fp, int* cabecalho);
