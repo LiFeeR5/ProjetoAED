@@ -19,7 +19,7 @@
 CC = gcc
 
 #  Compiler Flags
-CFLAGS = -g -Wall -std=c99
+CFLAGS = -O3 -Wall -std=c99
 
 #  Sources
 SOURCES = $(shell ls ./*.c)
