@@ -7,7 +7,7 @@
 #include "stack.h"
 
 //Ver a matriz toda, começamos a ver em l=0 e c=0, se nao encontrarmos uma mancha passamos a frente se encontrarmos tiramos, fazemos a gravidade e chamamos outra vez do inicio
-int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int** play, int *pontos)
+int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int numjogadas, int** play, int* pontos)
 {
 	int coordenadaLC = matriz[l][c];
 	azuleijoadjacente = Mancha(cabecalho, matriz, l, c, azuleijoadjacente);
@@ -43,16 +43,16 @@ int RemoverManchas(int* cabecalho, int** matriz, int l, int c, int azuleijoadjac
 		matriz[l][c] = coordenadaLC;
 		numjogadas = RemoverManchas(cabecalho, matriz, l + 1, 0, 0, numjogadas, play, pontos);
 	}
-	
+
 	return numjogadas;
 }
 
 //check
-void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int *pontos)
+void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azuleijoadjacente, int* pontos)
 {
 	int** play;
 
-    int tamanho = ((cabecalho[0] * cabecalho[1])) / 2;
+	int tamanho = ((cabecalho[0] * cabecalho[1])) / 2;
 
 	play = (int**)malloc(tamanho * sizeof(int*));
 
@@ -60,16 +60,16 @@ void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azu
 	{
 		play[i] = (int*)malloc(2 * sizeof(int));
 	}
-	
+
 	int numjogadas = RemoverManchas(cabecalho, matriz, l, c, azuleijoadjacente, 0, play, pontos);
 
 	fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);
-	
-	if(numjogadas != 0)
+
+	if (numjogadas != 0)
 	{
 		fprintf(fp_out, "%d %d\n", numjogadas, *pontos);
 
-		for(int i=0; i < numjogadas; i++)
+		for (int i = 0; i < numjogadas; i++)
 		{
 			fprintf(fp_out, "%d %d\n", play[i][0], play[i][1]);
 		}
@@ -77,9 +77,9 @@ void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azu
 
 	else
 	{
-		fprintf(fp_out,"0 0");
-	}	
-	
+		fprintf(fp_out, "0 0");
+	}
+
 	for (int i = 0; i < tamanho; i++)
 	{
 		free(play[i]);
@@ -89,59 +89,59 @@ void Variante1(FILE* fp_out, int* cabecalho, int** matriz, int l, int c, int azu
 
 void FreeV2(int** matrizTemporaria, int* qsort_array, int* cabecalho)
 {
-    free(qsort_array);
+	free(qsort_array);
 
-    for (int i = 0; i < cabecalho[0]; i++)
-    {
-        free(matrizTemporaria[i]);
-    }
-    free(matrizTemporaria);
+	for (int i = 0; i < cabecalho[0]; i++)
+	{
+		free(matrizTemporaria[i]);
+	}
+	free(matrizTemporaria);
 }
 
 void Variante2(Comboio* solucao, FILE* fp_out, int* cabecalho, int** matriz)
 {
-    Stack* stack = createStack(cabecalho[0]*cabecalho[1]/2);
-    int totalScore = 0;
-    int** matrizTemporaria;
-    int* qsort_array;
+	Stack* stack = createStack(cabecalho[0] * cabecalho[1] / 2);
+	int totalScore = 0;
+	int** matrizTemporaria;
+	int* qsort_array;
 
-    qsort_array = (int*) malloc(cabecalho[0]*cabecalho[1] * sizeof(int));
+	qsort_array = (int*)malloc(cabecalho[0] * cabecalho[1] * sizeof(int));
 
-    matrizTemporaria = (int**) malloc(cabecalho[0] * sizeof(int*));/////////////////Dar FREE NO FINAL DA VARIANTE 2
+	matrizTemporaria = (int**)malloc(cabecalho[0] * sizeof(int*));/////////////////Dar FREE NO FINAL DA VARIANTE 2
 
-    for (int i = 0; i < cabecalho[0]; i++)
-    {
-        matrizTemporaria[i] = (int*) malloc(cabecalho[1] * sizeof(int));
-    }
+	for (int i = 0; i < cabecalho[0]; i++)
+	{
+		matrizTemporaria[i] = (int*)malloc(cabecalho[1] * sizeof(int));
+	}
 
-    solucao = DFS2(stack, cabecalho, matriz, &totalScore, matrizTemporaria, qsort_array);
+	solucao = DFS2(stack, cabecalho, matriz, &totalScore, matrizTemporaria, qsort_array);
 
-    FreeV2(matrizTemporaria, qsort_array, cabecalho);
+	FreeV2(matrizTemporaria, qsort_array, cabecalho);
 
-    fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);
+	fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);
 
-    if(solucao == NULL)
-        fprintf(fp_out, "0 -1\n");
-    
-    else
-    {
-        int top = getTop(stack); 
-        
-        fprintf(fp_out, "%d %d\n", top, totalScore);
-        
-        for(int i = 0; i < top; i++)
-        {
-            solucao = (Comboio*)peekFisrt(stack, i);
-            fprintf(fp_out, "%d %d\n", solucao->manchacoord[solucao->cnt][0] +1, solucao->manchacoord[solucao->cnt][1] +1);
-            deleteBoard(solucao, cabecalho);
-        }
+	if (solucao == NULL)
+		fprintf(fp_out, "0 -1\n");
 
-        //Free do ultimo elemento da stack
-        solucao = (Comboio*)peekFisrt(stack, top);
+	else
+	{
+		int top = getTop(stack);
 
-        deleteBoard(solucao, cabecalho);
-        deleteStack(stack);
-    }
+		fprintf(fp_out, "%d %d\n", top, totalScore);
+
+		for (int i = 0; i < top; i++)
+		{
+			solucao = (Comboio*)peekFisrt(stack, i);
+			fprintf(fp_out, "%d %d\n", solucao->manchacoord[solucao->cnt][0] + 1, solucao->manchacoord[solucao->cnt][1] + 1);
+			deleteBoard(solucao, cabecalho);
+		}
+
+		//Free do ultimo elemento da stack
+		solucao = (Comboio*)peekFisrt(stack, top);
+
+		deleteBoard(solucao, cabecalho);
+		deleteStack(stack);
+	}
 }
 
 
@@ -149,67 +149,69 @@ void Variante2(Comboio* solucao, FILE* fp_out, int* cabecalho, int** matriz)
 
 
 
-void FreeV3(int** matrizTemporaria, int** saveBestRamo, int* qsort_array, int* cabecalho)
+void FreeV3(int** matrizTemporaria, int** saveBestRamo, int* qsort_array, int* cabecalho, int linhas)
 {
-    free(qsort_array);
+	free(qsort_array);
 
-    for (int i = 0; i < ((cabecalho[0]*cabecalho[1])/2) +1; i++)
-    {
-        free(saveBestRamo[i]);
-    }
-    free(saveBestRamo);
+	for (int i = 0; i < linhas + 1; i++)
+	{
+		free(saveBestRamo[i]);
+	}
+	free(saveBestRamo);
 
-    for (int i = 0; i < cabecalho[0]; i++)
-    {
-        free(matrizTemporaria[i]);
-    }
-    free(matrizTemporaria);
+	for (int i = 0; i < cabecalho[0]; i++)
+	{
+		free(matrizTemporaria[i]);
+	}
+	free(matrizTemporaria);
 }
 
 void Variante3(FILE* fp_out, int* cabecalho, int** matriz)
 {
-    Stack* stack = createStack(cabecalho[0]*cabecalho[1]/2);
-    int** matrizTemporaria;
-    int** saveBestRamo;
-    int* qsort_array;
-    int PontosAtuais = 0;
+	Stack* stack = createStack(cabecalho[0] * cabecalho[1] / 2);
+	int** matrizTemporaria;
+	int** saveBestRamo;
+	int* qsort_array;
+	int PontosAtuais = 0;
 
-    qsort_array = (int*) malloc(cabecalho[0]*cabecalho[1] * sizeof(int));
+	int linhas = ((cabecalho[0] * cabecalho[1]) / 2);
 
-    saveBestRamo = (int**) malloc(((cabecalho[0]*cabecalho[1])/2) * sizeof(int*));
+	qsort_array = (int*)malloc(cabecalho[0] * cabecalho[1] * sizeof(int));
 
-    for (int i = 0; i < ((cabecalho[0]*cabecalho[1])/2) +1; i++)
-    {
-        saveBestRamo[i] = (int*) malloc(2*sizeof(int));
-    }
+	saveBestRamo = (int**)malloc((linhas + 1) * sizeof(int*));
 
-    matrizTemporaria = (int**) malloc(cabecalho[0] * sizeof(int*));/////////////////Dar FREE NO FINAL DA VARIANTE 2
+	for (int i = 0; i < linhas + 1; i++)
+	{
+		saveBestRamo[i] = (int*)malloc(2 * sizeof(int));
+	}
 
-    for (int i = 0; i < cabecalho[0]; i++)
-    {
-        matrizTemporaria[i] = (int*) malloc(cabecalho[1] * sizeof(int));
-    } 
+	matrizTemporaria = (int**)malloc(cabecalho[0] * sizeof(int*));/////////////////Dar FREE NO FINAL DA VARIANTE 2
 
-    DFS3(stack, cabecalho, matriz, matrizTemporaria, saveBestRamo, qsort_array, &PontosAtuais);
+	for (int i = 0; i < cabecalho[0]; i++)
+	{
+		matrizTemporaria[i] = (int*)malloc(cabecalho[1] * sizeof(int));
+	}
 
-    fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);
+	DFS3(stack, cabecalho, matriz, matrizTemporaria, saveBestRamo, qsort_array, &PontosAtuais);
 
-    if(saveBestRamo[0][0] == 0)
-    {
-        fprintf(fp_out, "0 -1");
-    }
-    
-    else
-    {
-        int i = 0;
+	fprintf(fp_out, "%d %d %d\n", cabecalho[0], cabecalho[1], cabecalho[2]);
 
-        fprintf(fp_out, "%d %d\n", saveBestRamo[i][0], saveBestRamo[i][1]);
+	if (saveBestRamo[0][0] == 0)
+	{
+		fprintf(fp_out, "0 -1");
+	}
 
-        for(int i = 1; i <= saveBestRamo[0][0]; i++)
-        {
-            fprintf(fp_out, "%d %d\n", saveBestRamo[i][0]+1, saveBestRamo[i][1]+1);
-        }
-    }
+	else
+	{
+		int i = 0;
 
-    FreeV3(matrizTemporaria,saveBestRamo,qsort_array, cabecalho);    
+		fprintf(fp_out, "%d %d\n", saveBestRamo[i][0], saveBestRamo[i][1]);
+
+		for (int i = 1; i <= saveBestRamo[0][0]; i++)
+		{
+			fprintf(fp_out, "%d %d\n", saveBestRamo[i][0] + 1, saveBestRamo[i][1] + 1);
+		}
+	}
+
+	FreeV3(matrizTemporaria, saveBestRamo, qsort_array, cabecalho, linhas);
 }
